@@ -27,10 +27,10 @@
 
     <main class="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
       
-      <!-- PANEL IZQUIERDO: Formulario de Entrada y Base de Datos -->
+      <!-- PANEL IZQUIERDO: Formulario de Entrada -->
       <div class="lg:col-span-5 space-y-6">
         
-        <!-- Selector / Gestor de Casos Guardados -->
+        <!-- Historial de Casos -->
         <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
           <h2 class="text-lg font-bold text-slate-800 mb-3 flex items-center gap-2">
             <i class="fa-solid fa-database text-indigo-600"></i> Historial de Casos Guardados
@@ -58,7 +58,7 @@
               </div>
               <div>
                 <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Concepto / Descripción</label>
-                <textarea id="conceptoCaso" rows="2" placeholder="Breve descripción del ejercicio o condiciones especiales..." class="w-full border border-slate-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+                <textarea id="conceptoCaso" rows="2" placeholder="Breve descripción del ejercicio..." class="w-full border border-slate-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
               </div>
             </div>
           </div>
@@ -112,20 +112,20 @@
                 <input type="number" step="any" id="reembarqueCont" placeholder="0.00" class="w-full border rounded p-2 text-sm">
               </div>
               <div>
-                <label class="block text-xs text-slate-600">% ARB (ej: 1 para 1%)</label>
+                <label class="block text-xs text-slate-600">% ARB (ej: 1)</label>
                 <input type="number" step="any" id="pctARB" placeholder="Ej. 1" class="w-full border rounded p-2 text-sm">
               </div>
               <div>
-                <label class="block text-xs text-slate-600">% CAF (ej: 0.5 para 0.5%)</label>
+                <label class="block text-xs text-slate-600">% CAF (ej: 0.5)</label>
                 <input type="number" step="any" id="pctCAF" placeholder="Ej. 0.5" class="w-full border rounded p-2 text-sm">
               </div>
               <div>
-                <label class="block text-xs text-slate-600">% BAF (ej: 0.5 para 0.5%)</label>
+                <label class="block text-xs text-slate-600">% BAF (ej: 0.5)</label>
                 <input type="number" step="any" id="pctBAF" placeholder="Ej. 0.5" class="w-full border rounded p-2 text-sm">
               </div>
             </div>
 
-            <h3 class="text-sm font-bold text-indigo-900 uppercase tracking-wide pt-2">3. Seguro y Destino (CIF a DDP)</h3>
+            <h3 class="text-sm font-bold text-indigo-900 uppercase tracking-wide pt-2">3. Seguro, Destino y DPU (CIF a DDP)</h3>
             <div class="grid grid-cols-2 gap-3">
               <div class="col-span-2">
                 <label class="block text-xs text-slate-600">Tasa SP / Seguro (ej: 1 para 1%)</label>
@@ -161,6 +161,10 @@
                 <label class="block text-xs text-slate-600">T2 Viajes</label>
                 <input type="number" id="t2Viajes" placeholder="0" class="w-full border rounded p-2 text-sm">
               </div>
+              <div class="col-span-2 bg-purple-50 p-2 rounded border border-purple-200">
+                <label class="block text-xs font-bold text-purple-900">Valor Descarga DPU ($/cont)</label>
+                <input type="number" step="any" id="costoDescarga" placeholder="0.00" class="w-full border border-purple-300 rounded p-2 text-sm bg-white">
+              </div>
               <div>
                 <label class="block text-xs text-slate-600">% AG AD / Ad-Valorem (ej: 2)</label>
                 <input type="number" step="any" id="pctAdValorem" placeholder="Ej. 2" class="w-full border rounded p-2 text-sm">
@@ -186,12 +190,11 @@
         </form>
       </div>
 
-      <!-- PANEL DERECHO: Visualización del Reporte / Tabla Generada -->
+      <!-- PANEL DERECHO: Visualización del Reporte -->
       <div class="lg:col-span-7 space-y-6">
         
         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
           
-          <!-- Header del Caso Cargado -->
           <div class="border-b pb-4 mb-4 flex justify-between items-start">
             <div>
               <span class="inline-block bg-indigo-100 text-indigo-800 text-xs px-2.5 py-0.5 rounded-full font-semibold mb-2" id="badgeCaso">Nuevo Caso</span>
@@ -227,7 +230,6 @@
     </main>
   </div>
 
-  <!-- Pie de Página (Footer) -->
   <footer class="bg-indigo-950 text-indigo-200 py-6 border-t border-indigo-900 mt-auto">
     <div class="max-w-7xl mx-auto px-4 text-center">
       <p class="font-semibold text-white">Grupo de Gestión de Transportes 1</p>
@@ -235,15 +237,12 @@
     </div>
   </footer>
 
-  <!-- Script con la Lógica -->
   <script>
     let idCasoActual = null;
 
-    // Formateadores
     const fmt = (num) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(num || 0);
     const fmtNum = (num) => new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num || 0);
 
-    // Inicializar la página
     document.addEventListener('DOMContentLoaded', () => {
       generarCamposGastosPortuarios();
       cargarListaCasos();
@@ -293,6 +292,7 @@
         t2Tarifa: parseFloat(document.getElementById('t2Tarifa').value) || 0,
         t2Km: parseFloat(document.getElementById('t2Km').value) || 0,
         t2Viajes: parseFloat(document.getElementById('t2Viajes').value) || 0,
+        costoDescarga: parseFloat(document.getElementById('costoDescarga').value) || 0,
         pctAdValoremInput: parseFloat(document.getElementById('pctAdValorem').value) || 0,
         pctISVInput: parseFloat(document.getElementById('pctISV').value) || 0,
         pctImprevistosInput: parseFloat(document.getElementById('pctImprevistos').value) || 0,
@@ -326,26 +326,27 @@
       const totalFleteMaritimoBloque = fleteMaritimoSubtotal + ARB + CAF + BAF + totalReembarque;
 
       const CFR = FOB + totalFleteMaritimoBloque;
-      // Sobre Prima con 10% de incremento fijo sobre CFR
       const sobrePrima = (CFR + (CFR * 0.10)) * tasaSP;
       const CIF = CFR + sobrePrima;
 
-      // Sumatoria dinámica de gastos portuarios en destino
       const sumaPortDestinoUnitario = d.gastosPortuariosDestinoArr.reduce((acc, curr) => acc + curr, 0);
       const totalPortDestino = sumaPortDestinoUnitario * d.cantContenedores;
 
       const totalGastosImpo = d.gastosImpo * d.cantContenedores;
       const T2 = d.t2Tarifa * d.t2Km * d.cantContenedores * d.t2Viajes;
       
-      const adValorem = CIF * pctAdValorem;
-      // DAP suma CIF, gastos portuarios destino, gastos impo, T2 y Ad-Valorem (AG AD)
-      const DAP = CIF + totalPortDestino + totalGastosImpo + T2 + adValorem;
+      const DAP = CIF + totalPortDestino + totalGastosImpo + T2;
 
+      const adValorem = CIF * pctAdValorem;
       const baseISV = CIF + adValorem;
       const ISV = baseISV * pctISV;
-      const imprevistos = DAP * pctImprevistos;
 
-      const DDP = DAP + ISV + imprevistos;
+      const totalDescargas = d.costoDescarga * d.cantContenedores;
+      const DPU = DAP + totalDescargas;
+
+      const imprevistos = DPU * pctImprevistos;
+
+      const DDP = DPU + adValorem + ISV + imprevistos;
       const costoUnitario = d.cantidadUnidades > 0 ? DDP / d.cantidadUnidades : 0;
       const precioVenta = (1 - pctMargen) > 0 ? costoUnitario / (1 - pctMargen) : 0;
 
@@ -353,8 +354,7 @@
         EXW, T1, FCA, totalGastosExpo, FAS, totalPortOrigen, FOB,
         fleteMaritimoSubtotal, ARB, CAF, BAF, totalReembarque, totalFleteMaritimoBloque,
         CFR, sobrePrima, CIF, totalPortDestino, totalGastosImpo, T2, DAP,
-        adValorem, baseISV, ISV, imprevistos, DDP, costoUnitario, precioVenta,
-        pctARB, pctCAF, pctBAF, tasaSP, pctAdValorem, pctISV, pctImprevistos, pctMargen
+        adValorem, baseISV, ISV, totalDescargas, DPU, imprevistos, DDP, costoUnitario, precioVenta
       };
     }
 
@@ -389,15 +389,19 @@
         { incoterm: 'Gastos Portuarios Destino', formula: `${desglosadoGastosPort}`, monto: r.totalPortDestino, obs: 'Suma de gastos portuarios en destino' },
         { incoterm: 'Gastos Importación', formula: `$${d.gastosImpo} * ${d.cantContenedores}cont`, monto: r.totalGastosImpo, obs: 'Gastos de importación' },
         { incoterm: 'Trans en Destino (T2)', formula: `$${d.t2Tarifa} * ${d.t2Km}km * ${d.cantContenedores}cont * ${d.t2Viajes}`, monto: r.T2, obs: 'Flete del puerto destino a bodega' },
-        { incoterm: 'AG AD (Ad-Valorem)', formula: `${d.pctAdValoremInput}% * $${fmtNum(r.CIF)}`, monto: r.adValorem, obs: 'CIF por tasa ingresada' },
-        { incoterm: 'DAP', formula: `CIF + Gastos Port. + Impo + T2 + AG AD`, monto: r.DAP, obs: 'Suma de CIF, portuarios, impo, T2 y AG AD' },
+        { incoterm: 'DAP', formula: `CIF + Gastos Port. + Impo + T2`, monto: r.DAP, obs: 'Entregado en lugar convenido' },
 
-        { incoterm: 'ISV', formula: `($${fmtNum(r.CIF)} + $${fmtNum(r.adValorem)}) * ${d.pctISVInput}%`, monto: r.ISV, obs: 'Impuesto sobre ventas' },
-        { incoterm: 'Imprevistos', formula: `DAP * ${d.pctImprevistosInput}%`, monto: r.imprevistos, obs: 'Imprevistos calculados sobre DAP' },
-        { incoterm: 'DDP', formula: `DAP + ISV + Imprevistos`, monto: r.DDP, obs: 'Costo total entregado con derechos pagados', bold: true },
+        { incoterm: 'Ad-Valorem', formula: `${d.pctAdValoremInput}% * $${fmtNum(r.CIF)}`, monto: r.adValorem, obs: 'CIF por tasa ingresada' },
+        { incoterm: 'ISV', formula: `($${fmtNum(r.CIF)} + $${fmtNum(r.adValorem)}) * ${d.pctISVInput}%`, monto: r.ISV, obs: `ISV sobre base ($${fmtNum(r.baseISV)}) * ${d.pctISVInput}%` },
+        
+        { incoterm: 'Descargas', formula: `$${d.costoDescarga} * ${d.cantContenedores}cont`, monto: r.totalDescargas, obs: 'Valor descarga * cantidad contenedores', resaltarDPU: true },
+        { incoterm: 'DPU', formula: `Descargas + DAP`, monto: r.DPU, obs: 'Valor descarga + DAP', resaltarDPU: true, bold: true },
+        { incoterm: 'Imprevistos', formula: `DPU * ${d.pctImprevistosInput}%`, monto: r.imprevistos, obs: 'Calculado sobre DPU * 3%' },
 
-        { incoterm: 'COSTO TOTAL UNITARIO (CT)', formula: `DDP / ${d.cantidadUnidades} unidades`, monto: r.costoUnitario, obs: 'Costo por unidad de producto', destacada: true },
-        { incoterm: 'PRECIO DE VENTA (PV)', formula: `CT / (1 - ${d.pctMargenInput}%)`, monto: r.precioVenta, obs: 'Precio de venta sugerido con margen', destacada: true }
+        { incoterm: 'DDP', formula: `DAP + Ad-Valorem + ISV + Descargas + Imprevistos`, monto: r.DDP, obs: 'Suma del DAP, ad-valorem, ISV, descargas e imprevistos', bold: true },
+
+        { incoterm: 'COSTO TOTAL UNITARIO (CT)', formula: `DDP / ${d.cantidadUnidades} unidades`, monto: r.costoUnitario, obs: 'División del DDP / cantidad inicial de producto', destacada: true },
+        { incoterm: 'PRECIO DE VENTA (PV)', formula: `CT / (1 - ${d.pctMargenInput}%)`, monto: r.precioVenta, obs: `División del CT / ${1 - (d.pctMargenInput/100)}`, destacada: true }
       ];
 
       const tbody = document.getElementById('tablaCuerpo');
@@ -406,6 +410,7 @@
       filas.forEach(f => {
         const tr = document.createElement('tr');
         if (f.resaltar) tr.className = 'bg-yellow-50 font-medium text-amber-900';
+        if (f.resaltarDPU) tr.className = 'bg-pink-100 font-medium text-pink-900';
         if (f.destacada) tr.className = 'bg-indigo-50 font-bold text-indigo-900 border-t-2 border-indigo-200';
         if (f.bold) tr.className += ' font-bold';
 
@@ -419,7 +424,6 @@
       });
     }
 
-    // BASE DE DATOS LOCAL (LocalStorage)
     function guardarYCalcular(e) {
       e.preventDefault();
       const datos = obtenerValoresFormulario();
@@ -495,6 +499,7 @@
         document.getElementById('t2Tarifa').value = d.t2Tarifa || '';
         document.getElementById('t2Km').value = d.t2Km || '';
         document.getElementById('t2Viajes').value = d.t2Viajes || '';
+        document.getElementById('costoDescarga').value = d.costoDescarga || '';
         document.getElementById('pctAdValorem').value = d.pctAdValoremInput || '';
         document.getElementById('pctISV').value = d.pctISVInput || '';
         document.getElementById('pctImprevistos').value = d.pctImprevistosInput || '';
